@@ -3,24 +3,22 @@ resource "aws_key_pair" "mykey" {
   public_key = file(var.PATH_TO_PUBLIC_KEY)
 }
 
-resource "random_password" "winrm_password" {
-  length           = 16
-  special          = true
-  override_special = "_%@"
+resource "random_string" "winrm_password" {
+  length = 16
+  special = false
 }
 
 data "template_file" "user_data" {
-  template = file("scripts/user_data.tpl")
+  template = file("scripts/UserDataTemplate.tpl")
   vars = {
     Username = var.INSTANCE_USERNAME
-    Password = var.INSTANCE_PASSWORD
-    Group    = "administrators"
+    Password = random_string.winrm_password.result
   }
 }
 
 # https://github.com/dstamen/Terraform/blob/master/deploy-aws-ec2/main.tf
 resource "aws_instance" "win-example" {
-  depends_on        = [random_password.winrm_password]
+  depends_on        = [random_string.winrm_password]
   ami               = data.aws_ami.windows-ami.image_id
   get_password_data = true
   instance_type     = "t2.micro"
@@ -50,7 +48,7 @@ resource "aws_instance" "win-example" {
     type     = "winrm"
     timeout  = "3m"
     user     = var.INSTANCE_USERNAME
-    password = var.INSTANCE_PASSWORD
+    password = random_string.winrm_password.result
   }
 }
 
@@ -63,7 +61,7 @@ output "public_ip" {
 }
 
 output "winrm_user_password" {
-  value     = ["${var.INSTANCE_PASSWORD}"]
+  value     = ["${random_string.winrm_password.result}"]
   sensitive = true
 }
 

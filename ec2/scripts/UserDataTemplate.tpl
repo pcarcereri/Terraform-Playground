@@ -2,7 +2,7 @@
 
 $Username = "${Username}"
 $Password = "${Password}"
-$Group = "${Group}"
+$Group = "administrators"
 
 # Create a user account to interact with WinRM
 net user $Username $Password /add /y /expires:never
