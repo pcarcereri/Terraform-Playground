@@ -1,6 +1,11 @@
 <powershell>
+
+$Username = "${Username}"
+$Password = "${Password}"
+$Group = "${Group}"
+
 # Create a user account to interact with WinRM
-net user $Username '$Password' /add /y
+net user $Username $Password /add /y /expires:never
 net localgroup $Group $Username /add
 
 winrm quickconfig -q
@@ -16,4 +21,3 @@ net stop winrm
 sc.exe config winrm start=auto
 net start winrm
 </powershell></powershell>
-<persist>true</persist>
