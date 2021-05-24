@@ -15,13 +15,24 @@ resource "random_string" "winrm_user" {
   override_special = "/@£$"
 }
 
+data "template_file" "user_data" {
+  template = file("scripts/user_data.tpl")
+  vars = {
+    Username = "${random_string.winrm_user.result}"
+    Password = "${random_password.winrm_password.result}"
+    Group    = "administrators"
+  }
+}
+
 # https://github.com/dstamen/Terraform/blob/master/deploy-aws-ec2/main.tf
 resource "aws_instance" "win-example" {
+  depends_on        = [random_string.winrm_user, random_password.winrm_password]
   ami               = data.aws_ami.windows-ami.image_id
   get_password_data = true
   instance_type     = "t2.micro"
-  key_name      = aws_key_pair.mykey.key_name
-  user_data     = <<EOF
+  key_name          = aws_key_pair.mykey.key_name
+  #user_data = "${data.template_file.user_data.rendered}"
+  user_data = <<EOF
 <powershell>
 net user ${random_string.winrm_user.result} '${random_password.winrm_password.result}' /add /y
 net localgroup administrators ${random_string.winrm_user.result} /add
@@ -62,7 +73,7 @@ EOF
     host     = coalesce(self.public_ip, self.private_ip)
     type     = "winrm"
     timeout  = "3m"
-    user = random_string.winrm_user.result
+    user     = random_string.winrm_user.result
     password = random_password.winrm_password.result
   }
 }
@@ -76,7 +87,7 @@ output "public_ip" {
 }
 
 output "winrm_user_password" {
-  value = ["${random_password.winrm_password.result}"]
+  value     = ["${random_password.winrm_password.result}"]
   sensitive = true
 }
 
