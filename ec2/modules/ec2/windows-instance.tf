@@ -9,7 +9,7 @@ resource "aws_instance" "win-example" {
   user_data = data.template_file.user_data.rendered
 
   provisioner "file" {
-    source      = "scripts/SetupSqlServer.ps1"
+    source      = "${path.module}/scripts/SetupSqlServer.ps1"
     destination = "C:/SetupSqlServer.ps1"
   }
 
@@ -32,22 +32,5 @@ resource "aws_instance" "win-example" {
     user     = var.INSTANCE_USERNAME
     password = random_string.winrm_password.result
   }
-}
-
-output "public_dns" {
-  value = ["${aws_instance.win-example.*.public_dns}"]
-}
-
-output "public_ip" {
-  value = ["${aws_instance.win-example.*.public_ip}"]
-}
-
-output "winrm_user_password" {
-  value     = ["${random_string.winrm_password.result}"]
-  sensitive = true
-}
-
-output "winrm_user_name" {
-  value = ["${var.INSTANCE_USERNAME}"]
 }
 
