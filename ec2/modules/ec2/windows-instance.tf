@@ -1,29 +1,11 @@
-resource "aws_key_pair" "mykey" {
-  key_name   = "mykey"
-  public_key = file(var.PATH_TO_PUBLIC_KEY)
-}
-
-resource "random_string" "winrm_password" {
-  length = 16
-  special = false
-}
-
-data "template_file" "user_data" {
-  template = file("scripts/UserDataTemplate.tpl")
-  vars = {
-    Username = var.INSTANCE_USERNAME
-    Password = random_string.winrm_password.result
-  }
-}
-
 # https://github.com/dstamen/Terraform/blob/master/deploy-aws-ec2/main.tf
+# https://gist.github.com/RulerOf/10af91c7fa9e5a951467b94f712d8d9f
 resource "aws_instance" "win-example" {
   depends_on        = [random_string.winrm_password]
   ami               = data.aws_ami.windows-ami.image_id
   get_password_data = true
   instance_type     = "t2.micro"
   key_name          = aws_key_pair.mykey.key_name
-  # https://gist.github.com/RulerOf/10af91c7fa9e5a951467b94f712d8d9f
   user_data = data.template_file.user_data.rendered
 
   provisioner "file" {
