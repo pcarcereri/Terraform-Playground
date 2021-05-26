@@ -6,7 +6,7 @@ resource "aws_instance" "win-example" {
   get_password_data = true
   instance_type     = "t2.micro"
   key_name          = aws_key_pair.mykey.key_name
-  user_data = data.template_file.user_data.rendered
+  user_data         = data.template_cloudinit_config.cloudinit-example.rendered
 
   provisioner "file" {
     source      = "${path.module}/scripts/SetupSqlServer.ps1"
