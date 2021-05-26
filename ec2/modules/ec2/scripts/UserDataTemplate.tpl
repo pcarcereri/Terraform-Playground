@@ -5,7 +5,7 @@ $Password = "${Password}"
 $Group = "administrators"
 
 # Create a user account to interact with WinRM
-net user $Username $Password /add /y /expires:never
+net user $Username $Password /add /y 
 net localgroup $Group $Username /add
 
 winrm quickconfig -q
