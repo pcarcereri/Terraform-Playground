@@ -33,11 +33,11 @@ data "template_file" "create_winrm_user" {
 }
 
 data "template_file" "setup_sql_server" {
-  template = file("${path.module}/scripts/SetupSqlServer.ps1")
+  template = file("${path.module}/scripts/SetupSqlServer.tpl")
 }
 
 data "template_file" "remove_winrm_user" {
-  template = file("${path.module}/scripts/RemoveWinRMUser.ps1")
+  template = file("${path.module}/scripts/RemoveWinRMUser.tpl")
   vars = {
     Username = var.INSTANCE_USERNAME
     Password = random_string.winrm_password.result

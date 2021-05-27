@@ -15,23 +15,23 @@ resource "aws_instance" "win-example" {
     AccountID  = data.aws_caller_identity.current.account_id
   }
 
-  #provisioner "file" {
-  #  source      = "${path.module}/scripts/SetupSqlServer.ps1"
-  #  destination = "C:/SetupSqlServer.ps1"
-  #}
+  provisioner "file" {
+    source      = "${path.module}/Config/DriveLetterMappingConfig.json"
+    destination = "C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Config\\DriveLetterMappingConfig.json"
+  }
 
-  #provisioner "remote-exec" {
-  #  inline = [
-  #    "powershell -File C:/SetupSqlServer.ps1"
-  #  ]
-  #}
+  provisioner "remote-exec" {
+    inline = [
+      "powershell -File C:\\ProgramData\\Amazon\\EC2-Windows\\Launch\\Scripts\\InitializeDisks.ps1"
+    ]
+  }
 
-  #connection {
-  #  host     = coalesce(self.public_ip, self.private_ip)
-  #  type     = "winrm"
-  #  timeout  = "3m"
-  #  user     = var.INSTANCE_USERNAME
-  #  password = random_string.winrm_password.result
-  #}
+  connection {
+    host     = coalesce(self.public_ip, self.private_ip)
+    type     = "winrm"
+    timeout  = "3m"
+    user     = var.INSTANCE_USERNAME
+    password = random_string.winrm_password.result
+  }
 }
 

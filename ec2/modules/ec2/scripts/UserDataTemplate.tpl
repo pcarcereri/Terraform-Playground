@@ -20,4 +20,5 @@ netsh advfirewall firewall add rule name="WinRM 5986" protocol=TCP dir=in localp
 net stop winrm
 sc.exe config winrm start=auto
 net start winrm
+
 </powershell></powershell>

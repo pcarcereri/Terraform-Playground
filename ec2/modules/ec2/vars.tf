@@ -5,5 +5,5 @@ variable "INSTANCE_USERNAME" {
 }
 
 variable "INSTANCE_DEVICE_NAME" {
-  default = "/dev/xvdh"
+  default = "xvdb"
 }
